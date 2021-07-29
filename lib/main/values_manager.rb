@@ -1,4 +1,5 @@
 require_relative './mixer_helper'
+require_relative './../utils/utils'
 require 'active_support/core_ext/hash/keys'
 require 'active_support/core_ext/hash/deep_merge'
 require 'active_support/core_ext/object/blank'
@@ -9,17 +10,10 @@ require 'erb'
 module Kerbi
   class ValuesManager
     class << self
-      def str_assign_to_h(str_assign)
-        key_expr, value = str_assign.split("=")
-        assign_parts = key_expr.split(".") << value
-        assignment = assign_parts.reverse.inject{ |a,n| { n=>a } }
-        assignment.deep_symbolize_keys
-      end
-
       def file_assign_to_h(str_assign)
         key_expr, fname = str_assign.split("=")
         file_contents = File.read(fname)
-        str_assign_to_h("#{key_expr}=#{file_contents}")
+        Utils::Utils.str_assign_to_h("#{key_expr}=#{file_contents}")
       end
 
       def arg_values(name)
@@ -83,7 +77,7 @@ module Kerbi
       def read_arg_assignments
         str_assignments = arg_values("--set")
         str_assignments.inject({}) do |whole, str_assignment|
-          assignment = str_assign_to_h(str_assignment)
+          assignment = Utils::Utils.str_assign_to_h(str_assignment)
           whole.deep_merge(assignment)
         end
       end

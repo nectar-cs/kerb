@@ -1,5 +1,7 @@
 require "base64"
+require 'optparse'
 require_relative 'values_manager'
+require_relative 'state_manager'
 
 module Kerbi
   ##
@@ -43,6 +45,8 @@ module Kerbi
     def cli_exec
       if ARGV[0] == 'template'
         puts self.gen_yaml
+      elsif ARGV[0..1] == %w[state patch]
+        StateManManager.patch
       elsif ARGV[0..1] == %w[show values]
         puts hash_to_printable_s(self.values)
       elsif ARGV[0..1] == %w[show preset]

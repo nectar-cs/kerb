@@ -4,13 +4,6 @@ RSpec.describe Kerbi::ValuesManager do
 
   subject { Kerbi::ValuesManager }
 
-  describe ".str_assign_to_h" do
-    it "returns the right hash" do
-      result = subject.str_assign_to_h("foo.bar=baz")
-      expect(result).to eq({foo: {bar: 'baz'}})
-    end
-  end
-
   describe '.safely_read_values_file' do
     context 'when the file exists' do
       it 'returns the right hash' do

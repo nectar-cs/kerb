@@ -20,8 +20,31 @@ module Kerbi
             end
           end
         end
-      end
 
+        def str_assign_to_h(str_assign)
+          key_expr, value = str_assign.split("=")
+          assign_parts = key_expr.split(".") << value
+          assignment = assign_parts.reverse.inject{ |a,n| { n=>a } }
+          assignment.deep_symbolize_keys
+        end
+
+        def args2options(schema)
+          options = {}
+          OptionParser.new do |opts|
+            schema.each do |part|
+              opts.on(*part[:interface]) do |value|
+                if part[:many]
+                  options[part[:key]] ||= []
+                  options[part[:key]] << value
+                else
+                  options[part[:key]] = value
+                end
+              end
+            end
+          end.parse!
+          options.deep_symbolize_keys
+        end
+      end
     end
   end
 end
