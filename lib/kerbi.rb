@@ -1,6 +1,7 @@
 require_relative './main/engine'
 require_relative './main/mixer'
 require_relative './main/res_bucket'
+require_relative './main/args_manager'
 require_relative './main/values_manager'
 require_relative './main/mixer_helper'
 require_relative './templates/base'

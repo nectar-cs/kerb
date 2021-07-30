@@ -142,5 +142,4 @@ RSpec.describe Kerbi::Mixer do
       expect(result).to eq([{k1: 'v1'}, {k2: 'v2'}])
     end
   end
-
 end

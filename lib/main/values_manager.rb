@@ -10,25 +10,6 @@ require 'erb'
 module Kerbi
   class ValuesManager
     class << self
-      def file_assign_to_h(str_assign)
-        key_expr, fname = str_assign.split("=")
-        file_contents = File.read(fname)
-        Utils::Utils.str_assign_to_h("#{key_expr}=#{file_contents}")
-      end
-
-      def arg_values(name)
-        indicies = ARGV.each_index.select { |i| ARGV[i]==name }
-        indicies.map { |key_index| ARGV[key_index + 1] }
-      end
-
-      def arg_value(name)
-        self.arg_values(name)&.first
-      end
-
-      def run_env
-        arg_value('-e') || ENV['KERBI_ENV'] || 'development'
-      end
-
       def values_paths(fname)
         [
           fname,
@@ -45,8 +26,8 @@ module Kerbi
       def all_values_paths
         [
           *values_paths('values'),
-          *values_paths(run_env),
-          *arg_values('-f')
+          *values_paths(args_manager.get_run_env),
+          *args_manager.get_fnames
         ].compact
       end
 
@@ -74,19 +55,10 @@ module Kerbi
         JSON.parse(file_cont.deep_symbolize_keys) rescue nil
       end
 
-      def read_arg_assignments
-        str_assignments = arg_values("--set")
-        str_assignments.inject({}) do |whole, str_assignment|
-          assignment = Utils::Utils.str_assign_to_h(str_assignment)
-          whole.deep_merge(assignment)
-        end
-      end
-
-      def read_arg_file_assignments
-        str_assignments = arg_values("--set-from-file")
-        str_assignments.inject({}) do |whole, file_assignment|
-          assignment = file_assign_to_h(file_assignment)
-          whole.deep_merge(assignment)
+      def read_inline_assignments
+        args_manager.get_inlines.inject({}) do |whole, str_assignment|
+          hash_assignment = Utils::Utils.str_assign_to_h(str_assignment)
+          whole.deep_merge(hash_assignment)
         end
       end
 
@@ -102,8 +74,7 @@ module Kerbi
         result = all_values_paths.inject({}) do |whole, file_name|
           whole.
             deep_merge(read_values_file(file_name)).
-            deep_merge(read_arg_assignments).
-            deep_merge(read_arg_file_assignments)
+            deep_merge(read_inline_assignments)
         end
         $release_name = read_release_name
         result.deep_symbolize_keys

@@ -14,7 +14,7 @@ RSpec.describe Kerbi::Engine do
 
   describe "$release_name" do
     it "is available after reading the values" do
-      ARGV.replace(%w[template foo])
+      argue("template foo")
       kerbi.values
       expect($release_name).to eq('foo')
     end
@@ -24,7 +24,7 @@ RSpec.describe Kerbi::Engine do
     context 'with template cmd' do
       it 'prints the template YAML' do
         subject.generators = [MixerA, MixerB]
-        ARGV.replace(%w[template foo])
+        argue("template foo")
         expect { subject.cli_exec }.to output(YAML_OUT).to_stdout
       end
     end
@@ -32,7 +32,7 @@ RSpec.describe Kerbi::Engine do
     context 'with values cmd' do
       it 'prints the values YAML' do
         subject.generators = [MixerA, MixerB]
-        ARGV.replace(%w[show values --set x=y])
+        argue("show values --set x=y")
         expect { subject.cli_exec }.to output("x: y\n").to_stdout
       end
     end
@@ -41,7 +41,7 @@ RSpec.describe Kerbi::Engine do
       it 'prints the values YAML' do
         subject.generators = []
         fname = tmp_file("foo: bart")
-        ARGV.replace(['show', 'preset', fname, '--set', 'x=y'])
+        argue("show preset #{fname} --set x=y")
         expect { subject.cli_exec }.to output("foo: bart\n").to_stdout
       end
     end
@@ -68,7 +68,7 @@ RSpec.describe Kerbi::Engine do
 
       it 'selects only the requested resources' do
         subject.generators = [MixerC]
-        ARGV.replace(%w[foo --only kind-1:name-1 --only kind-2:name-2])
+        argue("foo --only kind-1:name-1 --only kind-2:name-2")
         expect(subject.gen(subject.values)).to eq(expected)
       end
     end

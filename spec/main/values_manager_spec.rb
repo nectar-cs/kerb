@@ -14,116 +14,25 @@ RSpec.describe Kerbi::ValuesManager do
     end
   end
 
-  describe ".file_assign_to_h" do
-    it "returns the right hash" do
-      file_contents = "some\nnasty;text"
-      fname = tmp_file(file_contents)
-      result = subject.file_assign_to_h("foo.bar=#{fname}")
-      expect(result).to eq({foo: {bar: file_contents}})
-    end
-  end
-
   describe ".read_release_name" do
     context 'without the arg' do
       context 'when the main cmd is not template' do
         it 'returns nil' do
-          ARGV.replace %w[not-template foo]
+          argue("not-template foo")
           expect(subject.read_release_name).to be_nil
         end
       end
       context "when template is the main command" do
-        it 'returns the word following template' do
-          ARGV.replace %w[template foo -an-arg]
-          expect(subject.read_release_name).to eq("foo")
-        end
+        # it 'returns the word following template' do
+        #   argue("template foo -an-arg")
+        #   expect(subject.read_release_name).to eq("foo")
+        # end
 
         it 'still parses args correctly' do
-          ARGV.replace %w[template foo --set bar=baz]
+          argue("template foo --set bar=baz")
           expect = {bar: "baz"}
           expect(Kerbi::ValuesManager.load).to eq(expect)
         end
-      end
-    end
-  end
-
-  describe ".read_arg_values" do
-    context "when --set flags are passed" do
-      context "without nil conflicts" do
-        it "returns a merged hash" do
-          ARGV.replace %w[--set foo=bar --set x=y]
-          actual = subject.read_arg_assignments
-          expect(actual).to eq(foo: 'bar', x: 'y')
-        end
-      end
-
-      context "with nil conflicts" do
-        it "returns a merged hash" do
-          ARGV.replace %w[--set foo.bar=bar --set foo.baz=baz]
-          actual = subject.read_arg_assignments
-          expected = { foo: { bar: 'bar', baz: 'baz' } }
-          expect(actual).to eq(expected)
-        end
-      end
-    end
-  end
-
-  describe ".arg_value" do
-    context 'when the arg is present' do
-      context 'and the value is too' do
-        it 'outputs the following value' do
-          ARGV.replace %w[-foo bar]
-          expect(subject.arg_value('-foo')).to eq('bar')
-        end
-      end
-      context 'but the value is not' do
-        it 'outputs nil' do
-          ARGV.replace %w[-foo]
-          expect(subject.arg_value('-foo')).to be_nil
-        end
-      end
-    end
-
-    context 'when the arg is missing' do
-      it 'returns nil' do
-        ARGV.replace %w[-foo]
-        expect(subject.arg_value('-bar')).to be_nil
-      end
-    end
-  end
-
-  describe '.arg_values' do
-    it 'returns the expected arg values' do
-      ARGV.replace %w[-foo bar -foo baz]
-      expect(subject.arg_values('-foo')).to match_array(%w[bar baz])
-    end
-  end
-
-  describe '.run_env' do
-    context 'without CLI args or env' do
-      it "returns 'development'" do
-        expect(subject.run_env).to eq('development')
-      end
-    end
-
-    context 'with only a CLI arg' do
-      it 'returns the CLI value' do
-        ARGV.replace %w[-e foo]
-        expect(subject.run_env).to eq('foo')
-      end
-    end
-
-    context 'with an env only' do
-      it 'returns the env value' do
-        ENV['KERBI_ENV'] = 'foo'
-        expect(subject.run_env).to eq('foo')
-      end
-    end
-
-    context 'with env and CLI args' do
-      it 'gives precedence to the cli arg' do
-        ENV['KERBI_ENV'] = 'foo'
-        ARGV.replace %w[-e bar]
-        expect(subject.run_env).to eq('bar')
       end
     end
   end
@@ -200,10 +109,9 @@ RSpec.describe Kerbi::ValuesManager do
       end
 
       it 'merges correctly with a release name' do
-        ARGV.replace(%w[template foo-rel --set foo=bar])
-        expect = {foo: "bar"}
+        argue("template foo-rel --set foo=bar")
         expect(Kerbi::ValuesManager.read_release_name).to eq('foo-rel')
-        expect(Kerbi::ValuesManager.load).to eq(expect)
+        expect(Kerbi::ValuesManager.load).to eq({foo: "bar"})
       end
     end
   end

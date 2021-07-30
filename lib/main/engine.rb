@@ -40,21 +40,23 @@ module Kerbi
     end
 
     ##
-    # Tami-adherent CLI arg routing
+    # KTEA-adherent CLI arg routing
     # @return [void] Prints any output to stdout
     def cli_exec
       if ARGV[0] == 'template'
         puts self.gen_yaml(self.values)
       elsif ARGV[0..1] == %w[state patch]
-        StateManManager.new.patch
+        StateManager.new.patch
       elsif ARGV[0..1] == %w[state get]
-        puts StateManManager.new.get_crt_vars.to_json
+
       elsif ARGV[0..1] == %w[state template]
-        state_values = StateManManager.new.get_crt_vars
+        state_values = StateManager.new.get_crt_vars
         merged_values = self.values.deep_merge(state_values)
         puts self.gen_yaml(merged_values)
       elsif ARGV[0..1] == %w[show values]
         puts hash_to_printable_s(self.values)
+      elsif ARGV[0..1] == %w[show state]
+        puts StateManager.new.get_crt_vars.to_json
       elsif ARGV[0..1] == %w[show preset]
         values = ValuesManager.safely_read_values_file(ARGV[2])
         puts hash_to_printable_s(values)
@@ -70,7 +72,7 @@ module Kerbi
         whole + generator.run.flatten
       end
 
-      if (filters = arg_values('--only')).any?
+      if (filters = args_manager.get_res_filters).any?
         res_defs = res_defs.select do |res_def|
           res_def = res_def.deep_symbolize_keys
           kind = res_def[:kind]
