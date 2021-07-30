@@ -93,6 +93,8 @@ module Kerbi
       def read_release_name
         if ARGV[0] == 'template'
           ARGV[1]
+        elsif ARGV[0..1] == %w[state template]
+          ARGV[2]
         end
       end
 

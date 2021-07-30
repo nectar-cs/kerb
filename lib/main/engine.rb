@@ -27,8 +27,8 @@ module Kerbi
     ##
     # Serializes all generators' outputs into a YAML string
     # @return [String] YAML string of all generator-produced resources
-    def gen_yaml
-      self.gen.each_with_index.map do |h, i|
+    def gen_yaml(values)
+      self.gen(values).each_with_index.map do |h, i|
         raw = YAML.dump(h.deep_stringify_keys)
         raw.gsub("---\n", i.zero? ? '' : "---\n\n")
       end.join("\n")
@@ -44,9 +44,15 @@ module Kerbi
     # @return [void] Prints any output to stdout
     def cli_exec
       if ARGV[0] == 'template'
-        puts self.gen_yaml
+        puts self.gen_yaml(self.values)
       elsif ARGV[0..1] == %w[state patch]
-        StateManManager.patch
+        StateManManager.new.patch
+      elsif ARGV[0..1] == %w[state get]
+        puts StateManManager.new.get_crt_vars.to_json
+      elsif ARGV[0..1] == %w[state template]
+        state_values = StateManManager.new.get_crt_vars
+        merged_values = self.values.deep_merge(state_values)
+        puts self.gen_yaml(merged_values)
       elsif ARGV[0..1] == %w[show values]
         puts hash_to_printable_s(self.values)
       elsif ARGV[0..1] == %w[show preset]
@@ -58,7 +64,7 @@ module Kerbi
       end
     end
 
-    def gen
+    def gen(values)
       res_defs = self.generators.inject([]) do |whole, gen_class|
         generator = gen_class.new(values)
         whole + generator.run.flatten

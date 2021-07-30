@@ -51,7 +51,7 @@ RSpec.describe Kerbi::Engine do
   describe '#gen_yaml' do
     it 'outputs the correct yaml string' do
       subject.generators = [MixerA, MixerB]
-      output = subject.gen_yaml
+      output = subject.gen_yaml(subject.values)
       expect(output).to eq(YAML_OUT)
     end
   end
@@ -69,7 +69,7 @@ RSpec.describe Kerbi::Engine do
       it 'selects only the requested resources' do
         subject.generators = [MixerC]
         ARGV.replace(%w[foo --only kind-1:name-1 --only kind-2:name-2])
-        expect(subject.gen).to eq(expected)
+        expect(subject.gen(subject.values)).to eq(expected)
       end
     end
   end

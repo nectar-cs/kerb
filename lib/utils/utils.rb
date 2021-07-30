@@ -42,7 +42,7 @@ module Kerbi
               end
             end
           end.parse!
-          options.deep_symbolize_keys
+          options.deep_symbolize_keys!
         end
       end
     end
