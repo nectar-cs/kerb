@@ -2,6 +2,7 @@
 
 if [[ "$1" == "test" ]]; then
   bundle exec rspec -fd
+#  KERBI_RSPEC_K8S_CONTEXT="selma" bundle exec rspec -fd
 #  ls
 #  echo 'in cov'
 #  ls coverage

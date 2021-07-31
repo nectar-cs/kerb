@@ -2,21 +2,27 @@ require_relative './../spec_helper'
 
 RSpec.describe Kerbi::StateManager do
 
-  # subject { Kerbi::StateManager.new }
+  subject { Kerbi::StateManager.new }
+
+  context = ENV['KERBI_RSPEC_K8S_CONTEXT'] || 'kind-kind'
+
+  # before :each do
+  #   puts "KONTEXT #{context}"
+  # end
   #
   # describe "#patch" do
   #   context "when there is no entry for variables" do
   #
   #     before :each do
   #       system(
-  #         "kubectl delete cm state -n default --context kind-kind",
+  #         "kubectl delete cm state -n default --context #{context}",
   #         out: File::NULL,
   #         err: File::NULL
   #       )
   #     end
   #
   #     it "patches the configmap" do
-  #       argue("--context kind-kind --set foo.bar=baz")
+  #       argue("--context #{context} --set foo.bar=baz")
   #       old_values = subject.get_crt_vars
   #       expect(old_values).to eq({})
   #       subject.patch
@@ -28,14 +34,14 @@ RSpec.describe Kerbi::StateManager do
   #   context "when there is an entry for variables" do
   #
   #     before :each do
-  #       system "kubectl delete cm state -n default --context kind-kind"
+  #       system "kubectl delete cm state -n default --context #{context}"
   #     end
   #
   #     it "patches the configmap" do
-  #       argue("--context kind-kind --set foo.bar=baz")
+  #       argue("--context #{context} --set foo.bar=baz")
   #       subject.patch
   #
-  #       argue("--context kind-kind --set foo.bar=car")
+  #       argue("--context #{context} --set foo.bar=car")
   #       subject.patch
   #
   #       new_values = subject.get_crt_vars
@@ -49,11 +55,11 @@ RSpec.describe Kerbi::StateManager do
   #   context "when it does not exist" do
   #
   #     before :each do
-  #       system "kubectl delete cm state -n default --context kind-kind"
+  #       system "kubectl delete cm state -n default --context #{context}"
   #     end
   #
   #     it "returns the configmap as a hash" do
-  #       argue("--context kind-kind")
+  #       argue("--context #{context}")
   #       result = subject.get_configmap(raise_on_er: false)
   #       expect(result).to be_nil
   #     end
@@ -61,11 +67,11 @@ RSpec.describe Kerbi::StateManager do
   #
   #   context "when it does exist" do
   #     before :each do
-  #       system "kubectl create cm state -n default --context kind-kind"
+  #       system "kubectl create cm state -n default --context #{context}"
   #     end
   #
   #     it "returns the configmap as a hash" do
-  #       argue("--context kind-kind")
+  #       argue("--context #{context}")
   #       result = subject.get_configmap
   #       expect(result).to_not be_nil
   #       must_have = { name: "state", namespace: "default" }

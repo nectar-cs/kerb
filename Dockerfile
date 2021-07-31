@@ -16,6 +16,10 @@ RUN gem install bundler && \
      bundle config set without 'development' && \
      bundle install --jobs 20 --retry 5
 
+#RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.17.5/bin/linux/amd64/kubectl && \
+#    mv kubectl /usr/bin/kubectl && \
+#    chmod +x /usr/bin/kubectl
+
 ADD . /app
 
 ENTRYPOINT ["/app/docker-entry.sh"]
