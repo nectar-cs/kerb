@@ -23,6 +23,16 @@ module Kerbi
       end
     end
 
+    # @param [String] string string to be base64 encoded
+    # @return [String] encoded string
+    def b64dec(string)
+      if string
+        Base64.decode64(string).strip
+      else
+        ''
+      end
+    end
+
     # @param [String] fname absolute path of file to be encoded
     # @return [String] encoded string
     def b64enc_file(fname)
